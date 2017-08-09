@@ -9,9 +9,10 @@ from __future__ import print_function
 import re
 import operator
 import six
+import os
 
 debug = True
-#test = True
+test = False
 
 
 def is_number(s):
@@ -139,10 +140,17 @@ class Rake(object):
         sorted_keywords = sorted(six.iteritems(keyword_candidates), key=operator.itemgetter(1), reverse=True)
         return sorted_keywords
 
+def get_keywords(text):
+    '''
+    output: keyword list
+    '''
+    abs_stop_words_path = os.path.join(os.path.dirname(__file__),"SmartStoplist.txt")
+    rake = Rake(abs_stop_words_path)
+    keywords = rake.run(text)
+    return [keyword for keyword,score in keywords][:10]
 
 
-#if test:
-if __name__ == '__main__':
+if test:
     text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types of systems and systems of mixed types."
 
     # Split text into sentences
@@ -167,7 +175,9 @@ if __name__ == '__main__':
     totalKeywords = len(sortedKeywords)
     if debug: print("totalKeywords:",totalKeywords); print("sortedKeywords/3:",sortedKeywords[0:int(totalKeywords / 3)]) #output
 
-    # usage
-    rake = Rake("SmartStoplist.txt")
-    keywords = rake.run(text)
-    print("keywords:",keywords) #[:10]
+if __name__ == '__main__':
+    text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types of systems and systems of mixed types."
+    keywords = get_keywords(text)
+    print("keywords:",keywords)
+
+
